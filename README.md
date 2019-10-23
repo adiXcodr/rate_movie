@@ -18,7 +18,7 @@ This project has three major parts :
 
 ### Steps to run the application
 
-1. Run app.py using below command to start Flask API
+1. Run app.py using the command below to start Flask API
 ```
 python app.py
 ```
@@ -28,7 +28,7 @@ python app.py
 4. To close the server, press Ctrl+C 
 
 5. You can also send direct POST requests to FLask API using Python's inbuilt request module
-Run the beow command to send the request with some pre-popuated values -
+Run the command below to send the request with some pre-popuated values -
 ```
 python request.py
 ```
