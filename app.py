@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('app.html')
 
 @app.route('/predict',methods=['POST'])
 def predict():
@@ -14,7 +14,7 @@ def predict():
     rate=5.333333333333333+blob.sentiment.polarity*4.5
     rate=round(rate,1)
     output=rate
-    return render_template('index.html', prediction_text='Rating: {}/10'.format(output))
+    return render_template('app.html', prediction_text='Rating: {}/10'.format(output))
 
 @app.route('/predict_api',methods=['POST'])
 def predict_api():

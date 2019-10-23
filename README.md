@@ -14,7 +14,7 @@
 This project has three major parts :
 1. app.py - This contains Flask APIs that receives movie a review through GUI or API calls, computes the precited value based on our model and returns it.
 2. request.py - This uses requests module to call APIs already defined in app.py and dispalys the returned value.
-3. templates - This folder contains the HTML template to allow user to enter the movie review.
+3. index.html - The HTML template to allow user to enter the movie review.
 
 ### Steps to run the application
 
