@@ -25,11 +25,11 @@ This project has three major parts :
 python app.py
 ```
    
-3. Navigate to URL http://localhost:5000
+2. Navigate to URL http://localhost:5000
 
-4. To close the server, press Ctrl+C 
+3. To close the server, press Ctrl+C 
 
-5. You can also send direct POST requests to FLask API using Python's inbuilt request module
+4. You can also send direct POST requests to FLask API using Python's inbuilt request module
 Run the command below to send the request with some pre-popuated values -
 ```
 python request.py
