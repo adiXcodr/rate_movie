@@ -9,19 +9,18 @@
 <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  
+<div id="mainheadfull">MOVIE RATING PREDICTION</div>
 </head>
 
 <body>
  <div class="login" id="logbox">
-  <div id="boxhead">MOVIE RATING PREDICTION</div>
     <form action="{{ url_for('predict')}}" method="post">
     	<input type="text" name="movietext" placeholder="How was the movie?" id="movietext" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large">Predict Rating</button>
+        <button type="submit" id="submitbutton">PREDICT</button>
     </form>
 
    <br>
-   <br>
+
    {{ prediction_text }}
 
  </div>
