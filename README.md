@@ -8,6 +8,8 @@
 * HTML, CSS
 
 ### Demo
+https://ratemovie.herokuapp.com/
+
 ![kcdemo](https://i.imgur.com/Pir6xTR.gif)
 
 ### Project Structure
