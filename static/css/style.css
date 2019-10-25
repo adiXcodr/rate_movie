@@ -69,19 +69,13 @@ input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgb
 #mainheadfull{
 	/*width:150%;
 	height:8%;*/
-	padding:1.2% 0;
+	padding:3% 0;
 	background-color:black;
 	position: relative;
-	width:100%;
-	left:-0.5%;
+	width:110%;
+	left:-6.5%;
 	text-align: center;
 	top:-1.1%;
 	overflow: hidden;
 
-}
-
-#mainhead{
-	position:relative;
-	left:-16%;
-	top:3%;
 }
