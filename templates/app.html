@@ -17,7 +17,9 @@
  <div class="login" id="logbox">
     <form action="{{ url_for('predict')}}" name="inputform" method="post" enctype="multipart/form-data">
       <input type="text" name="movietext" placeholder="How was the movie?" id="movietext" />
+      <p id="importwav">OR: Import Voice WAV </p>
       <input type="file" name="file" id="audiorecord" accept=".wav" capture="microphone"/>
+      <br></br>
       <button  type="submit" id="submitbutton"  >PREDICT</button>
     </form>
 
