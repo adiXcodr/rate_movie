@@ -17,8 +17,45 @@
   
  <div class="login" id="logbox">
     <form action="{{ url_for('predict')}}" name="inputform" method="post" enctype="multipart/form-data">
-      <input type="text" placeholder="How was the movie?" id="movietext" class="speech-input"  name="eng-input"/>
-      <p id="msg"></p>
+      <input type="text" placeholder="How was the movie?" id="movietext" class="speech-input"  name="eng-input" required/>
+	  
+	  
+                       
+   
+					
+					<div id ='interface'>
+                        <br><br/>
+						<div id="info">
+						<p id="info_start">or CLICK TO START RECORDING</p>
+						<p id="info_speak_now" style="display:none">CLICK TO STOP RECORDING</p>
+						<p id="info_no_speech" style="display:none">NO MIC WAS DETECTED</a>.</p>
+						<p id="info_no_microphone" style="display:none">NO MIC WAS DETECTED</p>
+						<p id="info_allow" style="display:none">ALLOW THE USE OF MICROPHONE FOR AUDIO INPUT</p>
+						<p id="info_denied" style="display:none">PERMISSION DENIED TO USE MICROPHONE</p>
+						<p id="info_blocked" style="display:none">PERMISSION DENIED TO USE MICROPHONE</p>
+						<p id="info_upgrade" style="display:none">AUDIO INPUT IS NOT SUPPORTED BY THIS BROWSER. OPEN THE WEBSITE ON CHROME</p>
+						</div>
+					     <div id='btn'>
+						<a id="start_button" onclick="startButton(event)" class='w3-button'>
+							<img alt="Start" id="start_img"
+								src="//google.com/intl/en/chrome/assets/common/images/content/mic.gif">
+						</a>
+						</div>
+					
+						<div id="results">
+						<span class="final" id='final_span'></span>
+						<span class="interim" id='interim_span'></span>
+						</div>
+						<br></br>
+					</div>
+					
+				
+  
+	 
+
+
+
+
       <button  type="submit" id="submitbutton" >PREDICT</button>
     </form>
 
@@ -29,179 +66,153 @@
  </div>
 
 <script>
+						// set up
 
-          /*global webkitSpeechRecognition */
-(function() {
-	'use strict';
+						var language = 'en-IN';
+						showInfo('info_start');
 
-	// check for support (webkit only)
-	if (!('webkitSpeechRecognition' in window)||!('SpeechRecognition' in window)) {
-		msg.innerHTML = "Audio Input is not supported in your browser";
-		return;
-	}
+						var final_transcript = '';
+						var recognizing = false;
+						var ignore_onend;
+						var start_timestamp;
 
-	var talkMsg = 'Speak now';
-	// seconds to wait for more input after last
-  	var defaultPatienceThreshold = 6;
+						var recognition;
 
-	function capitalize(str) {
-		return str.charAt(0).toUpperCase() + str.slice(1);
-	}
+						setUp();
 
-	var inputEls = document.getElementsByClassName('speech-input');
+						function setUp() {
+						if (!('webkitSpeechRecognition' in window)) {
+							upgrade();
+						} else {
+							start_button.style.display = 'inline-block';
+							recognition = new webkitSpeechRecognition();
+							recognition.continuous = true;
+							recognition.interimResults = true;
 
-	[].forEach.call(inputEls, function(inputEl) {
-		var patience = parseInt(inputEl.dataset.patience, 10) || defaultPatienceThreshold;
-		var micBtn, micIcon, holderIcon, newWrapper;
-		var shouldCapitalize = true;
+							recognition.onstart = function() {
+							recognizing = true;
+							showInfo('info_speak_now');
+							start_img.src = '//google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
+							};
 
-		// gather inputEl data
-		var nextNode = inputEl.nextSibling;
-		var parent = inputEl.parentNode;
-		var inputRightBorder = parseInt(getComputedStyle(inputEl).borderRightWidth, 10);
-		var buttonSize = 0.8 * (inputEl.dataset.buttonsize || inputEl.offsetHeight);
+							recognition.onerror = function(event) {
+							if (event.error == 'no-speech') {
+								start_img.src = '//google.com/intl/en/chrome/assets/common/images/content/mic.gif';
+								showInfo('info_no_speech');
+								ignore_onend = true;
+							}
+							if (event.error == 'audio-capture') {
+								start_img.src = '//google.com/intl/en/chrome/assets/common/images/content/mic.gif';
+								showInfo('info_no_microphone');
+								ignore_onend = true;
+							}
+							if (event.error == 'not-allowed') {
+								if (event.timeStamp - start_timestamp < 100) {
+								showInfo('info_blocked');
+								} else {
+								showInfo('info_denied');
+								}
+								ignore_onend = true;
+							}
+							};
 
-		// default max size for textareas
-		if (!inputEl.dataset.buttonsize && inputEl.tagName === 'TEXTAREA' && buttonSize > 26) {
-			buttonSize = 26;
-		}
+							recognition.onend = function() {
+							recognizing = false;
+							if (ignore_onend) {
+								return;
+							}
+							start_img.src = '//google.com/intl/en/chrome/assets/common/images/content/mic.gif';
+							if (!final_transcript) {
+								showInfo('info_start');
+								return;
+							}
+							showInfo('');
+							if (window.getSelection) {
+								window.getSelection().removeAllRanges();
+								var range = document.createRange();
+								range.selectNode(document.getElementById('final_span'));
+								window.getSelection().addRange(range);
+							}
+							};
 
-		// create wrapper if not present
-		var wrapper = inputEl.parentNode;
-		if (!wrapper.classList.contains('si-wrapper')) {
-			wrapper = document.createElement('div');
-			wrapper.classList.add('si-wrapper');
-			wrapper.appendChild(parent.removeChild(inputEl));
-			newWrapper = true;
-		}
+							recognition.onresult = function(event) {
+							var interim_transcript = '';
+							if (typeof(event.results) == 'undefined') {
+								recognition.onend = null;
+								recognition.stop();
+								upgrade();
+								return;
+							}
+							for (var i = event.resultIndex; i < event.results.length; ++i) {
+								if (event.results[i].isFinal) {
+								final_transcript += event.results[i][0].transcript;
+								
+								} else {
+								interim_transcript += event.results[i][0].transcript;
+								}
+							}
+							// final_transcript = capitalize(final_transcript);
+							// final_span.innerHTML = linebreak(final_transcript);
+							// interim_span.innerHTML = linebreak(interim_transcript);
+							//final_span.innerHTML = final_transcript;
+							document.getElementById("movietext").innerHTML = final_transcript;
+							document.getElementById("movietext").value = final_transcript;          
+							//interim_span.innerHTML = interim_transcript;
+							};
+						}
+						}
 
-		// create mic button if not present
-		micBtn = wrapper.querySelector('.si-btn');
-		if (!micBtn) {
-			micBtn = document.createElement('button');
-			micBtn.type = 'button';
-			micBtn.classList.add('si-btn');
-			micBtn.textContent = 'speech input';
-			micIcon = document.createElement('span');
-			holderIcon = document.createElement('span');
-			micIcon.classList.add('si-mic');
-			holderIcon.classList.add('si-holder');
-			micBtn.appendChild(micIcon);
-			micBtn.appendChild(holderIcon);
-			wrapper.appendChild(micBtn);
+						function upgrade() { // tell user to upgrade &/or use Chrome
+						start_button.style.visibility = 'hidden';
+						interface.style.visibility='hidden';
+						showInfo('info_upgrade');
+						}
 
-			// size and position mic and input
-			micBtn.style.cursor = 'pointer';
-			micBtn.style.top = 0.125 * buttonSize + 'px';
-			micBtn.style.height = micBtn.style.width = buttonSize + 'px';
-			inputEl.style.paddingRight = buttonSize - inputRightBorder + 'px';
-		}
+						// var two_line = /\n\n/g;
+						// var one_line = /\n/g;
+						// function linebreak(s) {
+						//   return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+						// }
 
-		// append wrapper where input was
-		if (newWrapper) parent.insertBefore(wrapper, nextNode);
+						// var first_char = /\S/;
+						// function capitalize(s) {
+						//   return s.replace(first_char, function(m) { return m.toUpperCase(); });
+						// }
 
-		// setup recognition
-		var prefix = '';
-		var isSentence;
-		var recognizing = false;
-		var timeout;
-		var oldPlaceholder = null;
-		var recognition = new webkitSpeechRecognition();
-		recognition.continuous = true;
-		recognition.interimResults = true;
+						// start listening right away, so it's completely hands-free
+						//startButton(event);
 
-		// if lang attribute is set on field use that
-		// (defaults to use the lang of the root element)
-		if (inputEl.lang) recognition.lang = inputEl.lang;
+						function startButton(event) {
+						if (recognizing) {
+							recognition.stop();
+							return;
+						}
+						final_transcript = '';
+						recognition.lang = language;
+						recognition.start();
+						ignore_onend = false;
+						final_span.innerHTML = '';
+						interim_span.innerHTML = '';
+						start_img.src = '//google.com/intl/en/chrome/assets/common/images/content/mic-slash.gif';
+						showInfo('info_allow');
+						start_timestamp = event.timeStamp;
+						}
 
-		function restartTimer() {
-			timeout = setTimeout(function() {
-				recognition.stop();
-			}, patience * 1000);
-		}
-
-		recognition.onstart = function() {
-			oldPlaceholder = inputEl.placeholder;
-			inputEl.placeholder = inputEl.dataset.ready || talkMsg;
-			recognizing = true;
-			micBtn.classList.add('listening');
-			restartTimer();
-		};
-
-		recognition.onend = function() {
-			recognizing = false;
-			clearTimeout(timeout);
-			micBtn.classList.remove('listening');
-			if (oldPlaceholder !== null) inputEl.placeholder = oldPlaceholder;
-
-			// If the <input> has data-instant-submit and a value,
-			if (inputEl.dataset.instantSubmit !== undefined && inputEl.value) {
-				// submit the form it's in (if it is in one).
-				if (inputEl.form) inputEl.form.submit();
-			}
-		};
-
-		recognition.onresult = function(event) {
-			clearTimeout(timeout);
-
-			// get SpeechRecognitionResultList object
-			var resultList = event.results;
-
-			// go through each SpeechRecognitionResult object in the list
-			var finalTranscript = '';
-			var interimTranscript = '';
-			for (var i = event.resultIndex; i < resultList.length; ++i) {
-				var result = resultList[i];
-
-				// get this result's first SpeechRecognitionAlternative object
-				var firstAlternative = result[0];
-
-				if (result.isFinal) {
-					finalTranscript = firstAlternative.transcript;
-				} else {
-					interimTranscript += firstAlternative.transcript;
-				}
-			}
-
-			// capitalize transcript if start of new sentence
-			var transcript = finalTranscript || interimTranscript;
-			transcript = !prefix || isSentence ? capitalize(transcript) : transcript;
-
-			// append transcript to cached input value
-			inputEl.value = prefix + transcript;
-
-			// set cursur and scroll to end
-			inputEl.focus();
-			if (inputEl.tagName === 'INPUT') {
-				inputEl.scrollLeft = inputEl.scrollWidth;
-			} else {
-				inputEl.scrollTop = inputEl.scrollHeight;
-			}
-
-			restartTimer();
-		};
-
-		micBtn.addEventListener('click', function(event) {
-			event.preventDefault();
-
-			// stop and exit if already going
-			if (recognizing) {
-				recognition.stop();
-				return;
-			}
-
-			// Cache current input value which the new transcript will be appended to
-			var endsWithWhitespace = inputEl.value.slice(-1).match(/\s/);
-			prefix = !inputEl.value || endsWithWhitespace ? inputEl.value : inputEl.value + ' ';
-
-			// check if value ends with a sentence
-			isSentence = prefix.trim().slice(-1).match(/[\.\?\!]/);
-
-			// restart recognition
-			recognition.start();
-		}, false);
-	});
-})();
+						function showInfo(info_id) {
+						
+						// try: comment out the contents of this function
+						
+						if (info_id) {
+							for (var child = info.firstChild; child; child = child.nextSibling) {
+							if (child.style) {
+								child.style.display = child.id == info_id ? 'inline' : 'none';
+							}
+							}
+							info.style.visibility = 'visible';
+						} else {
+							info.style.visibility = 'hidden';
+						}
+						}
 
 
 </script>
