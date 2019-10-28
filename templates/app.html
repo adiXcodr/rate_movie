@@ -24,9 +24,11 @@
    
 					
 					<div id ='interface'>
+						<br><br/>
+						<div>OR</div>
                         <br><br/>
 						<div id="info">
-						<p id="info_start">or CLICK TO START RECORDING</p>
+						<p id="info_start">CLICK TO START RECORDING</p>
 						<p id="info_speak_now" style="display:none">CLICK TO STOP RECORDING</p>
 						<p id="info_no_speech" style="display:none">NO MIC WAS DETECTED</a>.</p>
 						<p id="info_no_microphone" style="display:none">NO MIC WAS DETECTED</p>
@@ -35,16 +37,12 @@
 						<p id="info_blocked" style="display:none">PERMISSION DENIED TO USE MICROPHONE</p>
 						<p id="info_upgrade" style="display:none">AUDIO INPUT IS NOT SUPPORTED BY THIS BROWSER. OPEN THE WEBSITE ON CHROME</p>
 						</div>
+						<br><br/>
 					     <div id='btn'>
 						<a id="start_button" onclick="startButton(event)" class='w3-button'>
 							<img alt="Start" id="start_img"
 								src="//google.com/intl/en/chrome/assets/common/images/content/mic.gif">
 						</a>
-						</div>
-					
-						<div id="results">
-						<span class="final" id='final_span'></span>
-						<span class="interim" id='interim_span'></span>
 						</div>
 						<br></br>
 					</div>
@@ -155,7 +153,7 @@
 							// final_span.innerHTML = linebreak(final_transcript);
 							// interim_span.innerHTML = linebreak(interim_transcript);
 							//final_span.innerHTML = final_transcript;
-							document.getElementById("movietext").innerHTML = final_transcript;
+							//document.getElementById("movietext").innerHTML = final_transcript;
 							document.getElementById("movietext").value = final_transcript;          
 							//interim_span.innerHTML = interim_transcript;
 							};
