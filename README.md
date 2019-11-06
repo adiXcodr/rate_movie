@@ -10,7 +10,9 @@
 ### Demo
 https://ratemovie.herokuapp.com/
 
-![kcdemo](https://i.imgur.com/Pir6xTR.gif)
+<p align="center">
+  <img src="demo.gif"/>
+</p>
 
 ### Project Structure
 This project has three major parts :
